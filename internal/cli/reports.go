@@ -12,16 +12,20 @@ type ReportsCmd struct {
 	LedgerAccounts ReportsLedgerAccountsCmd `cmd:"" help:"Generate a ledger accounts report."                name:"ledger-accounts"`
 }
 
+type receiptTypeFlag struct {
+	ReceiptType []string `help:"Receipt types: SALES_INVOICE, PURCHASE_INVOICE, TRAVEL_INVOICE, BILL_OF_CHARGES, JOURNAL, SALARY, VAT_FORM, EMPLOYER_CONTRIBUTION, PERIODIC_TAX_RETURN, VAT_SUMMARY, SALES_ORDER, PURCHASE_ORDER, REFERENCE_PAYMENT, BANK_STATEMENT_AS_RECEIPT, RECEIPT_FOR_OPENING_ACCOUNTS. Repeat the flag for multiple values." name:"receipt-type"`
+}
+
 type accountingReportOptionsFlags struct {
-	ReceiptType         []string `help:"Receipt types. Repeat the flag for multiple values." name:"receipt-type"`
-	ReceiptCurrency     *string  `help:"Receipt currency."                                   name:"receipt-currency"`
-	ReceiptName         *string  `help:"Receipt name."                                       name:"receipt-name"`
-	EntryPeriodStart    *string  `help:"Entry period start date (YYYY-MM-DD)."               name:"entry-period-start"`
-	EntryPeriodEnd      *string  `help:"Entry period end date (YYYY-MM-DD)."                 name:"entry-period-end"`
-	TransactionValue    *string  `help:"Transaction value."                                  name:"transaction-value"`
-	TransactionCurrency *string  `help:"Transaction currency."                               name:"transaction-currency"`
-	ReportLanguage      *string  `help:"Report language."                                    name:"report-language"`
-	CustomerCompanyID   *string  `help:"Customer company ID."                                name:"customer-company-id"`
+	receiptTypeFlag     `embed:""`
+	ReceiptCurrency     *string `help:"Receipt currency."                     name:"receipt-currency"`
+	ReceiptName         *string `help:"Receipt name."                         name:"receipt-name"`
+	EntryPeriodStart    *string `help:"Entry period start date (YYYY-MM-DD)." name:"entry-period-start"`
+	EntryPeriodEnd      *string `help:"Entry period end date (YYYY-MM-DD)."   name:"entry-period-end"`
+	TransactionValue    *string `help:"Transaction value."                    name:"transaction-value"`
+	TransactionCurrency *string `help:"Transaction currency."                 name:"transaction-currency"`
+	ReportLanguage      *string `help:"Report language."                      name:"report-language"`
+	CustomerCompanyID   *string `help:"Customer company ID."                  name:"customer-company-id"`
 }
 
 func (f *accountingReportOptionsFlags) applyFields(builder *requestBodyBuilder, prefix string) error {
@@ -76,12 +80,16 @@ func (f *generalLedgerReportOptionsFlags) apply(builder *requestBodyBuilder, fie
 	})
 }
 
+type accountingReportTypeFlag struct {
+	Type *string `help:"Accounting report type: INCOME_STATEMENT, CASH_FLOW, BALANCE_SHEET." name:"type"`
+}
+
 type ReportsAccountingCmd struct {
-	StartDate               *string                      `help:"Report start date (YYYY-MM-DD)."                        name:"start-date"`
-	EndDate                 *string                      `help:"Report end date (YYYY-MM-DD)."                          name:"end-date"`
-	ReceiptStatus           []string                     `help:"Receipt statuses. Repeat the flag for multiple values." name:"receipt-status"`
-	Type                    *string                      `help:"Accounting report type."                                name:"type"`
-	AccountingReportOptions accountingReportOptionsFlags `embed:""                                                      prefix:"options."`
+	StartDate                *string  `help:"Report start date (YYYY-MM-DD)."                        name:"start-date"`
+	EndDate                  *string  `help:"Report end date (YYYY-MM-DD)."                          name:"end-date"`
+	ReceiptStatus            []string `help:"Receipt statuses. Repeat the flag for multiple values." name:"receipt-status"`
+	accountingReportTypeFlag `embed:""`
+	AccountingReportOptions  accountingReportOptionsFlags `embed:""                                                      prefix:"options."`
 }
 
 func (c *ReportsAccountingCmd) Run(ctx context.Context, r *runner) error {

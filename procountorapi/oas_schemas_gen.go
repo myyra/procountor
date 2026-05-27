@@ -5690,7 +5690,7 @@ type Invoice struct {
 	DeliveryTermsInfo OptDeliveryTermsInfo      `json:"deliveryTermsInfo"`
 	ExtraInfo         ExtraInfo                 `json:"extraInfo"`
 	// Invoice discount percentage. Scale: 4.
-	DiscountPercent float64 `json:"discountPercent"`
+	DiscountPercent OptFloat64 `json:"discountPercent"`
 	// Order reference of the invoice. This will be copied to the payment as message if no reference code
 	// is specified.
 	OrderReference OptString `json:"orderReference"`
@@ -5714,8 +5714,8 @@ type Invoice struct {
 	DeliveryInstructions OptString `json:"deliveryInstructions"`
 	// Channel of distribution for the invoice. Values EDIFACT and PAPER_INVOICE are not allowed for POST
 	// /invoices and PUT /invoices endpoints.
-	InvoiceChannel      InvoiceInvoiceChannel  `json:"invoiceChannel"`
-	InvoiceOperatorInfo OptInvoiceOperatorInfo `json:"invoiceOperatorInfo"`
+	InvoiceChannel      OptInvoiceInvoiceChannel `json:"invoiceChannel"`
+	InvoiceOperatorInfo OptInvoiceOperatorInfo   `json:"invoiceOperatorInfo"`
 	// Penal interest rate. Scale: 2.
 	PenaltyPercent OptFloat64 `json:"penaltyPercent"`
 	// Language of the invoice. Required for sales invoices and sales orders, otherwise ignored.
@@ -5836,7 +5836,7 @@ func (s *Invoice) GetExtraInfo() ExtraInfo {
 }
 
 // GetDiscountPercent returns the value of DiscountPercent.
-func (s *Invoice) GetDiscountPercent() float64 {
+func (s *Invoice) GetDiscountPercent() OptFloat64 {
 	return s.DiscountPercent
 }
 
@@ -5886,7 +5886,7 @@ func (s *Invoice) GetDeliveryInstructions() OptString {
 }
 
 // GetInvoiceChannel returns the value of InvoiceChannel.
-func (s *Invoice) GetInvoiceChannel() InvoiceInvoiceChannel {
+func (s *Invoice) GetInvoiceChannel() OptInvoiceInvoiceChannel {
 	return s.InvoiceChannel
 }
 
@@ -6076,7 +6076,7 @@ func (s *Invoice) SetExtraInfo(val ExtraInfo) {
 }
 
 // SetDiscountPercent sets the value of DiscountPercent.
-func (s *Invoice) SetDiscountPercent(val float64) {
+func (s *Invoice) SetDiscountPercent(val OptFloat64) {
 	s.DiscountPercent = val
 }
 
@@ -6126,7 +6126,7 @@ func (s *Invoice) SetDeliveryInstructions(val OptString) {
 }
 
 // SetInvoiceChannel sets the value of InvoiceChannel.
-func (s *Invoice) SetInvoiceChannel(val InvoiceInvoiceChannel) {
+func (s *Invoice) SetInvoiceChannel(val OptInvoiceInvoiceChannel) {
 	s.InvoiceChannel = val
 }
 
@@ -6793,7 +6793,7 @@ func (s *InvoiceBasicInfoType) UnmarshalText(data []byte) error {
 // Ref: #/components/schemas/InvoiceBillingAddress
 type InvoiceBillingAddress struct {
 	// Name ("first line") in the address.
-	Name string `json:"name"`
+	Name OptString `json:"name"`
 	// Specifier, such as c/o address.
 	Specifier OptString `json:"specifier"`
 	// Street. Required for SALES_INVOICE and SALES_ORDER if invoicing channel is MAIL. In that case,
@@ -6818,7 +6818,7 @@ type InvoiceBillingAddress struct {
 }
 
 // GetName returns the value of Name.
-func (s *InvoiceBillingAddress) GetName() string {
+func (s *InvoiceBillingAddress) GetName() OptString {
 	return s.Name
 }
 
@@ -6853,7 +6853,7 @@ func (s *InvoiceBillingAddress) GetSubdivision() OptString {
 }
 
 // SetName sets the value of Name.
-func (s *InvoiceBillingAddress) SetName(val string) {
+func (s *InvoiceBillingAddress) SetName(val OptString) {
 	s.Name = val
 }
 
@@ -7025,7 +7025,7 @@ func (s *InvoiceCounterpartyAddress) SetSubdivision(val OptString) {
 // Ref: #/components/schemas/InvoiceDeliveryAddress
 type InvoiceDeliveryAddress struct {
 	// Name ("first line") in the address.
-	Name string `json:"name"`
+	Name OptString `json:"name"`
 	// Specifier, such as c/o address.
 	Specifier OptString `json:"specifier"`
 	// Street. Required for SALES_INVOICE and SALES_ORDER if invoicing channel is MAIL. In that case,
@@ -7050,7 +7050,7 @@ type InvoiceDeliveryAddress struct {
 }
 
 // GetName returns the value of Name.
-func (s *InvoiceDeliveryAddress) GetName() string {
+func (s *InvoiceDeliveryAddress) GetName() OptString {
 	return s.Name
 }
 
@@ -7085,7 +7085,7 @@ func (s *InvoiceDeliveryAddress) GetSubdivision() OptString {
 }
 
 // SetName sets the value of Name.
-func (s *InvoiceDeliveryAddress) SetName(val string) {
+func (s *InvoiceDeliveryAddress) SetName(val OptString) {
 	s.Name = val
 }
 
@@ -9378,17 +9378,17 @@ type LedgerReceipt struct {
 	// the API.
 	Status OptLedgerReceiptStatus `json:"status"`
 	// Ledger receipt name.
-	Name string `json:"name"`
+	Name OptString `json:"name"`
 	// Ledger receipt date. Must not be in a closed fiscal period. See GET /fiscalyears for a list of
 	// fiscal years.
 	ReceiptDate time.Time `json:"receiptDate"`
 	// Ledger receipt VAT type.
-	VatType LedgerReceiptVatType `json:"vatType"`
+	VatType OptLedgerReceiptVatType `json:"vatType"`
 	// Ledger receipt VAT status. This can be overridden on transaction level. Use here the numeric parts
 	// of VAT status codes listed in "VAT defaults" in Procountor. For example, for VAT status code
 	// "vat_12", use value 12. The VAT status used must be enabled for the current receipt type
 	// (sales/purchase).
-	VatStatus int `json:"vatStatus"`
+	VatStatus OptInt `json:"vatStatus"`
 	// Ledger receipt VAT country. Only for JOURNAL types of ledger receipts. Requires a special right
 	// for foreign VATs. See Address.country in POST /invoices for a list of allowable values.
 	VatProcessing OptString `json:"vatProcessing"`
@@ -9451,7 +9451,7 @@ func (s *LedgerReceipt) GetStatus() OptLedgerReceiptStatus {
 }
 
 // GetName returns the value of Name.
-func (s *LedgerReceipt) GetName() string {
+func (s *LedgerReceipt) GetName() OptString {
 	return s.Name
 }
 
@@ -9461,12 +9461,12 @@ func (s *LedgerReceipt) GetReceiptDate() time.Time {
 }
 
 // GetVatType returns the value of VatType.
-func (s *LedgerReceipt) GetVatType() LedgerReceiptVatType {
+func (s *LedgerReceipt) GetVatType() OptLedgerReceiptVatType {
 	return s.VatType
 }
 
 // GetVatStatus returns the value of VatStatus.
-func (s *LedgerReceipt) GetVatStatus() int {
+func (s *LedgerReceipt) GetVatStatus() OptInt {
 	return s.VatStatus
 }
 
@@ -9571,7 +9571,7 @@ func (s *LedgerReceipt) SetStatus(val OptLedgerReceiptStatus) {
 }
 
 // SetName sets the value of Name.
-func (s *LedgerReceipt) SetName(val string) {
+func (s *LedgerReceipt) SetName(val OptString) {
 	s.Name = val
 }
 
@@ -9581,12 +9581,12 @@ func (s *LedgerReceipt) SetReceiptDate(val time.Time) {
 }
 
 // SetVatType sets the value of VatType.
-func (s *LedgerReceipt) SetVatType(val LedgerReceiptVatType) {
+func (s *LedgerReceipt) SetVatType(val OptLedgerReceiptVatType) {
 	s.VatType = val
 }
 
 // SetVatStatus sets the value of VatStatus.
-func (s *LedgerReceipt) SetVatStatus(val int) {
+func (s *LedgerReceipt) SetVatStatus(val OptInt) {
 	s.VatStatus = val
 }
 
@@ -13449,6 +13449,52 @@ func (o OptInvoiceDeliveryMethod) Or(d InvoiceDeliveryMethod) InvoiceDeliveryMet
 	return d
 }
 
+// NewOptInvoiceInvoiceChannel returns new OptInvoiceInvoiceChannel with value set to v.
+func NewOptInvoiceInvoiceChannel(v InvoiceInvoiceChannel) OptInvoiceInvoiceChannel {
+	return OptInvoiceInvoiceChannel{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptInvoiceInvoiceChannel is optional InvoiceInvoiceChannel.
+type OptInvoiceInvoiceChannel struct {
+	Value InvoiceInvoiceChannel
+	Set   bool
+}
+
+// IsSet returns true if OptInvoiceInvoiceChannel was set.
+func (o OptInvoiceInvoiceChannel) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptInvoiceInvoiceChannel) Reset() {
+	var v InvoiceInvoiceChannel
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptInvoiceInvoiceChannel) SetTo(v InvoiceInvoiceChannel) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptInvoiceInvoiceChannel) Get() (v InvoiceInvoiceChannel, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptInvoiceInvoiceChannel) Or(d InvoiceInvoiceChannel) InvoiceInvoiceChannel {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
 // NewOptInvoiceLanguage returns new OptInvoiceLanguage with value set to v.
 func NewOptInvoiceLanguage(v InvoiceLanguage) OptInvoiceLanguage {
 	return OptInvoiceLanguage{
@@ -14133,6 +14179,52 @@ func (o OptLedgerReceiptStatus) Get() (v LedgerReceiptStatus, ok bool) {
 
 // Or returns value if set, or given parameter if does not.
 func (o OptLedgerReceiptStatus) Or(d LedgerReceiptStatus) LedgerReceiptStatus {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptLedgerReceiptVatType returns new OptLedgerReceiptVatType with value set to v.
+func NewOptLedgerReceiptVatType(v LedgerReceiptVatType) OptLedgerReceiptVatType {
+	return OptLedgerReceiptVatType{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptLedgerReceiptVatType is optional LedgerReceiptVatType.
+type OptLedgerReceiptVatType struct {
+	Value LedgerReceiptVatType
+	Set   bool
+}
+
+// IsSet returns true if OptLedgerReceiptVatType was set.
+func (o OptLedgerReceiptVatType) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptLedgerReceiptVatType) Reset() {
+	var v LedgerReceiptVatType
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptLedgerReceiptVatType) SetTo(v LedgerReceiptVatType) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptLedgerReceiptVatType) Get() (v LedgerReceiptVatType, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptLedgerReceiptVatType) Or(d LedgerReceiptVatType) LedgerReceiptVatType {
 	if v, ok := o.Get(); ok {
 		return v
 	}
@@ -15102,6 +15194,52 @@ func (o OptPaymentInfoBankReferenceCodeType) Get() (v PaymentInfoBankReferenceCo
 
 // Or returns value if set, or given parameter if does not.
 func (o OptPaymentInfoBankReferenceCodeType) Or(d PaymentInfoBankReferenceCodeType) PaymentInfoBankReferenceCodeType {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptPaymentInfoPaymentMethod returns new OptPaymentInfoPaymentMethod with value set to v.
+func NewOptPaymentInfoPaymentMethod(v PaymentInfoPaymentMethod) OptPaymentInfoPaymentMethod {
+	return OptPaymentInfoPaymentMethod{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptPaymentInfoPaymentMethod is optional PaymentInfoPaymentMethod.
+type OptPaymentInfoPaymentMethod struct {
+	Value PaymentInfoPaymentMethod
+	Set   bool
+}
+
+// IsSet returns true if OptPaymentInfoPaymentMethod was set.
+func (o OptPaymentInfoPaymentMethod) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptPaymentInfoPaymentMethod) Reset() {
+	var v PaymentInfoPaymentMethod
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptPaymentInfoPaymentMethod) SetTo(v PaymentInfoPaymentMethod) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptPaymentInfoPaymentMethod) Get() (v PaymentInfoPaymentMethod, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptPaymentInfoPaymentMethod) Or(d PaymentInfoPaymentMethod) PaymentInfoPaymentMethod {
 	if v, ok := o.Get(); ok {
 		return v
 	}
@@ -16865,7 +17003,7 @@ type PaymentInfo struct {
 	// Payment method. Methods other than BANK_TRANSFER, CASH, CLEARING may require fields not supported
 	// by the API. The DIRECT_DEBIT method is not supported by POST /invoices and PUT /invoices endpoints.
 	//  The DKLMPKRE method is deprecated and read only, DOMESTIC_PAYMENT_CREDITOR should be used instead.
-	PaymentMethod PaymentInfoPaymentMethod `json:"paymentMethod"`
+	PaymentMethod OptPaymentInfoPaymentMethod `json:"paymentMethod"`
 	// Currency of the payment in ISO 4217 format.
 	Currency    string         `json:"currency"`
 	BankAccount OptBankAccount `json:"bankAccount"`
@@ -16893,7 +17031,7 @@ type PaymentInfo struct {
 }
 
 // GetPaymentMethod returns the value of PaymentMethod.
-func (s *PaymentInfo) GetPaymentMethod() PaymentInfoPaymentMethod {
+func (s *PaymentInfo) GetPaymentMethod() OptPaymentInfoPaymentMethod {
 	return s.PaymentMethod
 }
 
@@ -16948,7 +17086,7 @@ func (s *PaymentInfo) GetClearingCode() OptString {
 }
 
 // SetPaymentMethod sets the value of PaymentMethod.
-func (s *PaymentInfo) SetPaymentMethod(val PaymentInfoPaymentMethod) {
+func (s *PaymentInfo) SetPaymentMethod(val OptPaymentInfoPaymentMethod) {
 	s.PaymentMethod = val
 }
 

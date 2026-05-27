@@ -30,7 +30,7 @@ func TestWriteTextOutputInvoiceUsesStructuredSections(t *testing.T) {
 	invoice.ID.SetTo(12345)
 	invoice.Status.SetTo(procountorapi.InvoiceStatus("APPROVED"))
 	invoice.InvoiceNumber.SetTo(987)
-	invoice.InvoiceChannel = procountorapi.InvoiceInvoiceChannel("EMAIL")
+	invoice.InvoiceChannel.SetTo(procountorapi.InvoiceInvoiceChannel("EMAIL"))
 	invoice.Version.SetTo(time.Date(2026, time.February, 2, 12, 0, 0, 0, time.UTC))
 	invoice.InvoiceSumInfo[0].Currency.SetTo("EUR")
 	invoice.InvoiceSumInfo[0].InvoiceSumTotal.SetTo(125.50)
@@ -64,11 +64,7 @@ func TestWriteTextOutputLedgerReceiptUsesTransactionTable(t *testing.T) {
 	t.Parallel()
 
 	receipt := procountorapi.LedgerReceipt{
-		Type:        procountorapi.LedgerReceiptType("JOURNAL"),
-		Name:        "Manual adjustment",
 		ReceiptDate: time.Date(2026, time.March, 1, 0, 0, 0, 0, time.UTC),
-		VatType:     procountorapi.LedgerReceiptVatType("SALES"),
-		VatStatus:   1,
 		Transactions: []procountorapi.Transaction{{
 			TransactionType: procountorapi.TransactionTransactionType("ENTRY"),
 			Account:         "3000",
@@ -77,8 +73,12 @@ func TestWriteTextOutputLedgerReceiptUsesTransactionTable(t *testing.T) {
 		}},
 	}
 	receipt.ID.SetTo(678)
+	receipt.Type = procountorapi.LedgerReceiptType("JOURNAL")
 	receipt.Status.SetTo(procountorapi.LedgerReceiptStatus("APPROVED"))
+	receipt.Name.SetTo("Manual adjustment")
 	receipt.ReceiptNumber.SetTo(42)
+	receipt.VatType.SetTo(procountorapi.LedgerReceiptVatType("SALES"))
+	receipt.VatStatus.SetTo(1)
 	receipt.Transactions[0].Description.SetTo("Revenue adj")
 
 	var out bytes.Buffer

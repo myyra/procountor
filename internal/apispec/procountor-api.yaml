@@ -4303,10 +4303,7 @@ components:
       required:
         - counterParty
         - date
-        - discountPercent
         - extraInfo
-        - invoiceChannel
-        - invoiceRows
         - paymentInfo
         - type
     InvoiceApprovalInformation:
@@ -4465,8 +4462,6 @@ components:
           type: string
           maxLength: 35
           minLength: 0
-      required:
-        - name
     InvoiceCheckerInformation:
       description: "Checkers are supported for PURCHASE_INVOICE, TRAVEL_INVOICE, BILL_OF_CHARGES"
       type: object
@@ -4561,8 +4556,6 @@ components:
           type: string
           maxLength: 35
           minLength: 0
-      required:
-        - name
     InvoiceIds:
       type: object
       properties:
@@ -5161,12 +5154,9 @@ components:
             $ref: "#/components/schemas/Attachment"
           readOnly: true
       required:
-        - name
         - receiptDate
         - transactions
         - type
-        - vatStatus
-        - vatType
     LedgerReceiptBasicInfo:
       description: Search results.
       type: object
@@ -5584,7 +5574,6 @@ components:
         - currency
         - currencyRate
         - dueDate
-        - paymentMethod
     Person:
       type: object
       properties:

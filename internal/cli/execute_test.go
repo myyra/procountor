@@ -361,6 +361,68 @@ func TestExecuteInvoicesSaveRequiresInvoiceImport(t *testing.T) {
 	assertInvalidUsageError(t, code, stdout, stderr, "--invoice")
 }
 
+func TestExecuteInvoicesGetAcceptsSparsePaymentAndAddresses(t *testing.T) {
+	t.Parallel()
+
+	authFile := writeValidAuthState(t, "access-token")
+
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet || r.URL.Path != "/invoices/123" {
+			t.Fatalf("unexpected request: %s %s", r.Method, r.URL.Path)
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = io.WriteString(w, `{
+			"id": 123,
+			"type": "PURCHASE_INVOICE",
+			"date": "2026-02-01",
+			"counterParty": {"counterPartyAddress": {"name": "Acme Oy"}},
+			"billingAddress": {},
+			"deliveryAddress": {},
+			"paymentInfo": {
+				"currency": "EUR",
+				"dueDate": "2026-02-15",
+				"currencyRate": 1
+			},
+			"extraInfo": {
+				"accountingByRow": false,
+				"unitPricesIncludeVat": false
+			},
+			"discountPercent": 0,
+			"invoiceChannel": "NO_SENDING",
+			"invoiceRows": []
+		}`)
+	}))
+	defer server.Close()
+
+	code, stdout, stderr := runCLIJSON(t, []string{
+		"--base-url", server.URL,
+		"--auth-file", authFile,
+		"invoices", "get", "123",
+	})
+	assertCommandSucceeded(t, code, stderr)
+
+	var out struct {
+		PaymentInfo struct {
+			PaymentMethod *string `json:"paymentMethod"`
+		} `json:"paymentInfo"`
+		BillingAddress  map[string]any `json:"billingAddress"`
+		DeliveryAddress map[string]any `json:"deliveryAddress"`
+	}
+	if err := json.Unmarshal([]byte(stdout), &out); err != nil {
+		t.Fatalf("decode output: %v\noutput: %q", err, stdout)
+	}
+	if out.PaymentInfo.PaymentMethod != nil {
+		t.Fatalf("paymentMethod = %q, want omitted", *out.PaymentInfo.PaymentMethod)
+	}
+	if len(out.BillingAddress) != 0 {
+		t.Fatalf("billingAddress = %+v, want empty object", out.BillingAddress)
+	}
+	if len(out.DeliveryAddress) != 0 {
+		t.Fatalf("deliveryAddress = %+v, want empty object", out.DeliveryAddress)
+	}
+}
+
 func TestExecuteLedgerReceiptsUpdateRequiresLedgerReceiptImport(t *testing.T) {
 	t.Parallel()
 
@@ -384,10 +446,7 @@ func TestExecuteLedgerReceiptsGetAcceptsNullableInvoiceIDAndMissingVATPercent(t 
 			"id": 123,
 			"type": "JOURNAL",
 			"status": "UNFINISHED",
-			"name": "Manual adjustment",
 			"receiptDate": "2026-02-01",
-			"vatType": "SALES",
-			"vatStatus": 1,
 			"invoiceId": null,
 			"transactions": [
 				{"id": 678, "transactionType": "ENTRY", "account": "4000", "accountingValue": 100},

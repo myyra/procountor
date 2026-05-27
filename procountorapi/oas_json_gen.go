@@ -24862,8 +24862,10 @@ func (s *Transaction) encodeFields(e *jx.Encoder) {
 		e.Float64(s.AccountingValue)
 	}
 	{
-		e.FieldStart("vatPercent")
-		e.Float64(s.VatPercent)
+		if s.VatPercent.Set {
+			e.FieldStart("vatPercent")
+			s.VatPercent.Encode(e)
+		}
 	}
 	{
 		if s.VatType.Set {
@@ -25007,11 +25009,9 @@ func (s *Transaction) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"accountingValue\"")
 			}
 		case "vatPercent":
-			requiredBitSet[0] |= 1 << 4
 			if err := func() error {
-				v, err := d.Float64()
-				s.VatPercent = float64(v)
-				if err != nil {
+				s.VatPercent.Reset()
+				if err := s.VatPercent.Decode(d); err != nil {
 					return err
 				}
 				return nil
@@ -25144,7 +25144,7 @@ func (s *Transaction) Decode(d *jx.Decoder) error {
 	// Validate required fields.
 	var failures []validate.FieldError
 	for i, mask := range [2]uint8{
-		0b00011110,
+		0b00001110,
 		0b00000000,
 	} {
 		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {

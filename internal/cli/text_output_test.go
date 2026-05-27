@@ -73,7 +73,7 @@ func TestWriteTextOutputLedgerReceiptUsesTransactionTable(t *testing.T) {
 			TransactionType: procountorapi.TransactionTransactionType("ENTRY"),
 			Account:         "3000",
 			AccountingValue: 100,
-			VatPercent:      0,
+			VatPercent:      procountorapi.NewOptFloat64(0),
 		}},
 	}
 	receipt.ID.SetTo(678)

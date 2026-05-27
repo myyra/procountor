@@ -9395,7 +9395,7 @@ type LedgerReceipt struct {
 	// ID of the linked invoice. For sales and purchase invoice ledger receipts, this refers to the
 	// invoice the receipt holds accounting data for. For journal receipts, an invoice is automatically
 	// generated to store certain data fields. Use this ID in POST /attachments endpoint.
-	InvoiceId OptInt `json:"invoiceId"`
+	InvoiceId OptNilInt `json:"invoiceId"`
 	// Number of the ledger receipt.
 	ReceiptNumber OptInt `json:"receiptNumber"`
 	// Invoice notes. Linked to Invoice.notes. Not visible on ledger receipt printouts. Use as line break.
@@ -9476,7 +9476,7 @@ func (s *LedgerReceipt) GetVatProcessing() OptString {
 }
 
 // GetInvoiceId returns the value of InvoiceId.
-func (s *LedgerReceipt) GetInvoiceId() OptInt {
+func (s *LedgerReceipt) GetInvoiceId() OptNilInt {
 	return s.InvoiceId
 }
 
@@ -9596,7 +9596,7 @@ func (s *LedgerReceipt) SetVatProcessing(val OptString) {
 }
 
 // SetInvoiceId sets the value of InvoiceId.
-func (s *LedgerReceipt) SetInvoiceId(val OptInt) {
+func (s *LedgerReceipt) SetInvoiceId(val OptNilInt) {
 	s.InvoiceId = val
 }
 
@@ -20459,7 +20459,7 @@ type Transaction struct {
 	// Transaction accounting value. This value is net. It will be automatically rounded up to scale 2.
 	AccountingValue float64 `json:"accountingValue"`
 	// Transaction VAT percentage. Must be a percentage currently in use for the company.
-	VatPercent float64 `json:"vatPercent"`
+	VatPercent OptFloat64 `json:"vatPercent"`
 	// Transaction VAT type.
 	VatType OptTransactionVatType `json:"vatType"`
 	// Transaction VAT status. This overrides the VAT status set for the parent ledger receipt. Use here
@@ -20509,7 +20509,7 @@ func (s *Transaction) GetAccountingValue() float64 {
 }
 
 // GetVatPercent returns the value of VatPercent.
-func (s *Transaction) GetVatPercent() float64 {
+func (s *Transaction) GetVatPercent() OptFloat64 {
 	return s.VatPercent
 }
 
@@ -20584,7 +20584,7 @@ func (s *Transaction) SetAccountingValue(val float64) {
 }
 
 // SetVatPercent sets the value of VatPercent.
-func (s *Transaction) SetVatPercent(val float64) {
+func (s *Transaction) SetVatPercent(val OptFloat64) {
 	s.VatPercent = val
 }
 

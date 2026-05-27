@@ -9288,8 +9288,15 @@ func (s *Transaction) Validate() error {
 		})
 	}
 	if err := func() error {
-		if err := (validate.Float{}).Validate(float64(s.VatPercent)); err != nil {
-			return errors.Wrap(err, "float")
+		if value, ok := s.VatPercent.Get(); ok {
+			if err := func() error {
+				if err := (validate.Float{}).Validate(float64(value)); err != nil {
+					return errors.Wrap(err, "float")
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
 		}
 		return nil
 	}(); err != nil {

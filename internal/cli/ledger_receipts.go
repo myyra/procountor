@@ -220,7 +220,7 @@ func (f *ledgerReceiptTransactionInputFlags) buildRequired() (procountorapi.Tran
 	if err != nil {
 		return procountorapi.Transaction{}, invalidUsage("invalid --vat-percent: %v", err)
 	}
-	transaction.VatPercent = value.(float64)
+	transaction.VatPercent.SetTo(value.(float64))
 	if _, err := f.apply(&transaction); err != nil {
 		return procountorapi.Transaction{}, err
 	}
@@ -250,7 +250,7 @@ func (f *ledgerReceiptTransactionInputFlags) apply(transaction *procountorapi.Tr
 		if err != nil {
 			return false, invalidUsage("invalid --vat-percent: %v", err)
 		}
-		transaction.VatPercent = value.(float64)
+		transaction.VatPercent.SetTo(value.(float64))
 		changed = true
 	}
 	if f.VatType != nil {

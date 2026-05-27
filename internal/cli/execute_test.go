@@ -369,6 +369,64 @@ func TestExecuteLedgerReceiptsUpdateRequiresLedgerReceiptImport(t *testing.T) {
 	assertInvalidUsageError(t, code, stdout, stderr, "--ledger-receipt")
 }
 
+func TestExecuteLedgerReceiptsGetAcceptsNullableInvoiceIDAndMissingVATPercent(t *testing.T) {
+	t.Parallel()
+
+	authFile := writeValidAuthState(t, "access-token")
+
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet || r.URL.Path != testLedgerReceipt123Path {
+			t.Fatalf("unexpected request: %s %s", r.Method, r.URL.Path)
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = io.WriteString(w, `{
+			"id": 123,
+			"type": "JOURNAL",
+			"status": "UNFINISHED",
+			"name": "Manual adjustment",
+			"receiptDate": "2026-02-01",
+			"vatType": "SALES",
+			"vatStatus": 1,
+			"invoiceId": null,
+			"transactions": [
+				{"id": 678, "transactionType": "ENTRY", "account": "4000", "accountingValue": 100},
+				{"id": 679, "transactionType": "ENTRY", "account": "1910", "accountingValue": -100, "vatPercent": 0}
+			]
+		}`)
+	}))
+	defer server.Close()
+
+	code, stdout, stderr := runCLIJSON(t, []string{
+		"--base-url", server.URL,
+		"--auth-file", authFile,
+		"ledger-receipts", "get", "123",
+	})
+	assertCommandSucceeded(t, code, stderr)
+
+	var out struct {
+		InvoiceID    *int `json:"invoiceId"`
+		Transactions []struct {
+			VatPercent *float64 `json:"vatPercent"`
+		} `json:"transactions"`
+	}
+	if err := json.Unmarshal([]byte(stdout), &out); err != nil {
+		t.Fatalf("decode output: %v\noutput: %q", err, stdout)
+	}
+	if out.InvoiceID != nil {
+		t.Fatalf("invoiceId = %v, want null", *out.InvoiceID)
+	}
+	if len(out.Transactions) != 2 {
+		t.Fatalf("transactions length = %d, want 2", len(out.Transactions))
+	}
+	if out.Transactions[0].VatPercent != nil {
+		t.Fatalf("first transaction vatPercent = %v, want omitted", *out.Transactions[0].VatPercent)
+	}
+	if out.Transactions[1].VatPercent == nil || *out.Transactions[1].VatPercent != 0 {
+		t.Fatalf("second transaction vatPercent = %v, want 0", out.Transactions[1].VatPercent)
+	}
+}
+
 func TestExecuteBusinessPartnersPatchRequiresBusinessPartnerImport(t *testing.T) {
 	t.Parallel()
 

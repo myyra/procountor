@@ -5084,6 +5084,7 @@ components:
         invoiceId:
           description: "ID of the linked invoice. For sales and purchase invoice ledger receipts, this refers to the invoice the receipt holds accounting data for. For journal receipts, an invoice is automatically generated to store certain data fields. Use this ID in POST /attachments endpoint."
           type: integer
+          nullable: true
           readOnly: true
         receiptNumber:
           description: Number of the ledger receipt.
@@ -6401,7 +6402,6 @@ components:
         - account
         - accountingValue
         - transactionType
-        - vatPercent
     TransactionIdentifier:
       type: object
       properties:
